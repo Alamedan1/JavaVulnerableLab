@@ -1,5 +1,5 @@
 name: CI
-      - name: Checkmarx CxFlow Action
+    - name: Checkmarx CxFlow Action
       uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.4 # GitHub Action version
       with:
         project: KB_GHA_Rslvr  # <-- Insert Checkmarx CxSCA Project Name
