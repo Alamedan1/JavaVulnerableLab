@@ -1,88 +1,50 @@
-name: CI
-# Controls when the workflow will run
+# This workflow is to automate Checkmarx SCA scans.  It runs on a push to the main branch.
+#
+# The following GitHub Secrets must be first defined:
+#   - CHECKMARX_SCA_USERNAME
+#   - CHECKMARX_SCA_PASSWORD
+#
+# The following variables must be inserted below:
+#   - <ProjectName>
+#   - <SCATenant>
+#   - <GitHubRepoUrl>
+#
+# For full documentation, including a list of all inputs, please refer to the README https://github.com/checkmarx-ts/checkmarx-cxflow-github-action
+
+name: Checkmarx SCA Scan
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
-#   push:
-    branches: [ main ]
-#  pull_request:
-    branches: [ main ]
-
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+  push:
+    branches:
+      - main
+      - master
+    
 jobs:
-  # This workflow contains a single job called "build"
   build:
-    # The type of runner that the job will run on
     runs-on: ubuntu-latest
-
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+    - name: Checkout
+      uses: actions/checkout@v2
+    - name: Checkmarx CxFlow Action
+      uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.4 # GitHub Action version
+      with:
+        project: ${{ secrets.CHECKMARX_PROJECT }}  # <-- Insert Checkmarx CxSCA Project Name
+        sca_api_url: https://api.scacheckmarx.com
+        sca_app_url: https://sca.checkmarx.com
+        sca_access_control_url: https://platform.checkmarx.net
+        sca_tenant: US-Support  # <-- Insert Checkmarx CxSCA Tenant
+        sca_username: ${{ secrets.SCA_USERNAME }} # To be stored in GitHub Secrets.
+        sca_password: ${{ secrets.SCA_PASSWORD }} # To be stored in GitHub Secrets.
+        break_build: false
+        scanners: sca
+        bug_tracker: Sarif
+        params: --namespace=${{ github.repository_owner }} --repo-name=${{ github.event.repository.name }} --branch=${{ github.ref }} --repo-url="<GitHubRepoUrl>" --cx-flow.filterSeverity --cx-flow.filterCategory
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: cx.sarif
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
-      # Download SCA Resolver
-      - name: Run a multi-line script
-        run: |
-          wget https://sca-downloads.s3.amazonaws.com/cli/latest/ScaResolver-linux64.tar.gz
-          tar -xzvf ScaResolver-linux64.tar.gz
-          rm -rf ScaResolver-linux64.tar.gz
-          
-  - name: Checkmarx CxFlow Action
-  # You may pin to the exact commit or the version.
-  # uses: checkmarx-ts/checkmarx-cxflow-github-action@49d8269b14ca87910ba003d47a31fa0c7a11f2fe
-  uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.5
-  with:
-    # Provide Checkmarx URL
-    checkmarx_url: # default is 
-    # Select a Checkmarx Team
-    team: # default is /CxServer/SP/Company
-    # Provide Checkmarx Username
-    checkmarx_username: # default is 
-    # Provide Checkmarx Password
-    checkmarx_password: # default is 
-    # Provide Checkmarx Client Secret
-    checkmarx_client_secret: # default is 
-    # Select a Checkmarx Project
-    project: # default is 
-    # Select an Application Name used by downstream bug tracker systems
-    app: # optional, default is SampleApp
-    # Select a Checkmarx Preset
-    preset: # optional, default is High and Medium
-    # Break build based on Checkmarx findings?
-    break_build: # optional
-    # Bug tracker for the scan results.
-    bug_tracker: # optional, default is Sarif
-    # Incremental Scans?
-    incremental: # optional, default is true
-    # Additional CLI parameters
-    params: 
-    log-level : Debug # optional, default is 
-    # GitHub API Token
-    github_token: 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 # optional, default is ${{ github.token }}
-    # Vulnerability Scanners (sast, sca, cxgo)
-    scanners: sca # default is 
-    # Provide SCA API URL
-    sca_api_url: https://api-sca.checkmarx.net/  # optional, default is https://api.scacheckmarx.com
-    # Provide SCA APP URL
-    sca_app_url: https://sca.checkmarx.net  # optional, default is https://sca.scacheckmarx.com
-    # Provide SCA Access Control URL
-    sca_access_control_url: https://platform.checkmarx.net  # optional, default is https://platform.checkmarx.net
-    # Provide SCA Tenant
-    sca_tenant: US-Support # optional, default is 
-    # Provide SCA Username
-    sca_username: kavitha # optional, default is 
-    # Provide SCA Password
-    sca_password: Cx!2345678# optional, default is 
-    # Java options will be passed to java
-    java_opts: # optional, default is -XX:MaxRAMPercentage=75.0
+# Run SCA Resolver
+	-name: SCA Resolver
+    run: "./ScaResolver -s '${{ github.workspace }}' -n ' ${{ github.repository }}' -a ${{ secrets.SCA_TENANT }} -u ${{ secrets.SCA_USERNAME }} -p '${{ secrets.SCA_PASSWORD }}' "
+		
