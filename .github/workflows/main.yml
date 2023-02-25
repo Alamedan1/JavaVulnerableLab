@@ -39,10 +39,10 @@
     # Provide SCA Access Control URL
     sca_access_control_url: https://platform.checkmarx.net  # optional, default is https://platform.checkmarx.net
     # Provide SCA Tenant
-    sca_tenant:US-Support # optional, default is 
+    sca_tenant: US-Support # optional, default is 
     # Provide SCA Username
-    sca_username:kavitha # optional, default is 
+    sca_username: kavitha # optional, default is 
     # Provide SCA Password
-    sca_password:Cx!2345678# optional, default is 
+    sca_password: Cx!2345678# optional, default is 
     # Java options will be passed to java
     java_opts: # optional, default is -XX:MaxRAMPercentage=75.0
