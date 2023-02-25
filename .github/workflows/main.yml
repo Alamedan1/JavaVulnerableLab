@@ -1,6 +1,6 @@
 - name: Checkmarx CxFlow Action
-      uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.4 # GitHub Action version
-      with:
+  uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.4 # GitHub Action version
+  with:
         project: KB_GHA_Rslvr  # <-- Insert Checkmarx CxSCA Project Name
         sca_api_url: https://api-sca.checkmarx.com
         sca_app_url: https://sca.checkmarx.com
