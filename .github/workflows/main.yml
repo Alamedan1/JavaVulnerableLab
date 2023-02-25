@@ -41,5 +41,3 @@ jobs:
 
     - name: SCA Resolver
       run: "./ScaResolver -s '${{ github.workspace }}' -n ' ${{ github.repository }}' -a ${{ secrets.SCA_TENANT }} -u ${{ secrets.SCA_USERNAME }} -p '${{ secrets.SCA_PASSWORD }}' "
-	
-   
