@@ -44,6 +44,6 @@ jobs:
         sarif_file: cx.sarif
 
 # Run SCA Resolver
-	-name: SCA Resolver
+   - name: SCA Resolver
     run: "./ScaResolver -s '${{ github.workspace }}' -n ' ${{ github.repository }}' -a ${{ secrets.SCA_TENANT }} -u ${{ secrets.SCA_USERNAME }} -p '${{ secrets.SCA_PASSWORD }}' "
 		
