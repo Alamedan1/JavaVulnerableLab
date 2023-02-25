@@ -37,7 +37,7 @@ jobs:
        - name: Checkmarx CxFlow Action
       uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.4 # GitHub Action version
       with:
-        project: ${{ secrets.CHECKMARX_PROJECT }}  # <-- Insert Checkmarx CxSCA Project Name
+        project: KB_GHA_Rslvr  # <-- Insert Checkmarx CxSCA Project Name
         sca_api_url: https://api-sca.checkmarx.com
         sca_app_url: https://sca.checkmarx.com
         sca_access_control_url: https://platform.checkmarx.net
@@ -56,5 +56,5 @@ jobs:
 
 	# Run SCA Resolver
 	- name: SCA Resolver
-    run: "./ScaResolver -s '${{ github.workspace }}' -n ' ${{ github.repository }}' -a ${{ secrets.SCA_TENANT }} -u ${{ secrets.SCA_USERNAME }} -p '${{ secrets.SCA_PASSWORD }}' "
+        run: "./ScaResolver -s '${{ github.workspace }}' -n ' ${{ github.repository }}' -a ${{ secrets.SCA_TENANT }} -u ${{ secrets.SCA_USERNAME }} -p '${{ secrets.SCA_PASSWORD }}' "
 		
