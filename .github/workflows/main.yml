@@ -34,24 +34,27 @@ jobs:
         run: |
           echo Add other actions to build,
           echo test, and deploy your project.
-      - name: Checkmarx AST Github Action
-        # You may pin to the exact commit or the version.
-        # uses: Checkmarx/ast-github-action@33a450f2a0ae798ec9546bef50903edacf41c1e7
-        uses: Checkmarx/ast-github-action@2.0.4
-        with:
-          # Provide the AST portal URL
-          base_uri: https://eu.ast.checkmarx.net 
-          # Provide the Tenant for AST portal URL
-          cx_tenant: dp_wp_account
-          # Client ID for AST portal authentication
-          cx_client_id: KB_Github
-          # Secret key for AST portal authentication
-          cx_client_secret: 2c0387f1-2e21-46be-a213-7c193cf32e03
-          # Select a Checkmarx Project Name
-          project_name: KB_JVL_AST_GitHub_Action # optional, default is ${{ github.repository }}
-          # Branch name
-          branch: main
-          # GitHub API Token
-          github_token: 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
-          # Additional parameters for AST scan
-          additional_params: # optional, default is 
+       - name: Checkmarx CxFlow Action
+      uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.4 # GitHub Action version
+      with:
+        project: ${{ secrets.CHECKMARX_PROJECT }}  # <-- Insert Checkmarx CxSCA Project Name
+        sca_api_url: https://api-sca.checkmarx.com
+        sca_app_url: https://sca.checkmarx.com
+        sca_access_control_url: https://platform.checkmarx.net
+        sca_tenant: <SCATenant>  # <-- Insert Checkmarx CxSCA Tenant
+        sca_username: ${{ secrets.SCA_USERNAME }} # To be stored in GitHub Secrets.
+        sca_password: ${{ secrets.SCA_PASSWORD }} # To be stored in GitHub Secrets.
+        break_build: false
+        scanners: sca
+        bug_tracker: Sarif
+        params: --namespace=${{ github.repository_owner }} --repo-name=${{ github.event.repository.name }} --branch=${{ github.ref }} --repo-url="<GitHubRepoUrl>" --cx-flow.filterSeverity --cx-flow.filterCategory
+
+    - name: Upload SARIF file
+      uses: github/codeql-action/upload-sarif@v1
+      with:
+        sarif_file: cx.sarif
+
+	# Run SCA Resolver
+	- name: SCA Resolver
+    run: "./ScaResolver -s '${{ github.workspace }}' -n ' ${{ github.repository }}' -a ${{ secrets.SCA_TENANT }} -u ${{ secrets.SCA_USERNAME }} -p '${{ secrets.SCA_PASSWORD }}' "
+		
