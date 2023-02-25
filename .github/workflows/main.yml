@@ -27,9 +27,9 @@ jobs:
     - name: Checkmarx CxFlow Action
       uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.5 # GitHub Action version
       with:
-        project: ${{ secrets.CHECKMARX_PROJECT }}  # <-- Insert Checkmarx CxSCA Project Name
-        sca_api_url: https://api-sca.checkmarx.com
-        sca_app_url: https://sca.checkmarx.com
+        project: KB_GHA_SCAResolver  # <-- Insert Checkmarx CxSCA Project Name
+        sca_api_url: https://api-sca.checkmarx.net
+        sca_app_url: https://sca.checkmarx.net
         sca_access_control_url: https://platform.checkmarx.net
         sca_tenant: ${{ secrets.SCA_TENANT}}  # <-- Insert Checkmarx CxSCA Tenant
         sca_username: ${{ secrets.SCA_USERNAME }} # To be stored in GitHub Secrets.
