@@ -43,4 +43,4 @@ jobs:
          tar -xzvf ScaResolver-linux64.tar.gz;
          rm -rf ScaResolver-linux64.tar.gz;
     - name: SCA Resolver
-      run: "./ScaResolver-linux64/ScaResolver -s '${{ github.workspace }}' -n ' ${{ github.repository }}' -a ${{ secrets.SCA_TENANT }} -u ${{ secrets.SCA_USERNAME }} -p '${{ secrets.SCA_PASSWORD }}' "
+      run: "./app/ScaResolver-linux64/ScaResolver -s '${{ github.workspace }}' -n ' ${{ github.repository }}' -a ${{ secrets.SCA_TENANT }} -u ${{ secrets.SCA_USERNAME }} -p '${{ secrets.SCA_PASSWORD }}' "
