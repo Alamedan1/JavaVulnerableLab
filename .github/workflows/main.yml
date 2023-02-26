@@ -39,9 +39,8 @@ jobs:
         bug_tracker: Sarif
         params: --namespace=${{ github.repository_owner }} --repo-name=${{ github.event.repository.name }} --branch=${{ github.ref }} --repo-url="<GitHubRepoUrl>" --cx-flow.filterSeverity --cx-flow.filterCategory
     - name: Run a multi-line script
-        run: |
-          wget https://sca-downloads.s3.amazonaws.com/cli/latest/ScaResolver-linux64.tar.gz
+      run: wget https://sca-downloads.s3.amazonaws.com/cli/latest/ScaResolver-linux64.tar.gz
           tar -xzvf ScaResolver-linux64.tar.gz
           rm -rf ScaResolver-linux64.tar.gz
-   - name: SCA Resolver
+    - name: SCA Resolver
       run: "./ScaResolver-linux64/ScaResolver -s '${{ github.workspace }}' -n ' ${{ github.repository }}' -a ${{ secrets.SCA_TENANT }} -u ${{ secrets.SCA_USERNAME }} -p '${{ secrets.SCA_PASSWORD }}' "
