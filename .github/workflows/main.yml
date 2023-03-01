@@ -27,7 +27,6 @@ jobs:
     - name: Checkmarx CxFlow Action
       uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.5 # GitHub Action version
       with:
-        include-source: false
         project: KB_GHA_SCAResolver  # <-- Insert Checkmarx CxSCA Project Name
         sca_api_url: https://api-sca.checkmarx.net
         sca_app_url: https://sca.checkmarx.net
@@ -38,7 +37,8 @@ jobs:
         break_build: false
         scanners: sca
         bug_tracker: Sarif
-        params: --sca.enable-sca-resolver=true --sca.log-level=Debug --namespace=${{ github.repository_owner }} --repo-name=${{ github.event.repository.name }} --branch=${{ github.ref }} --repo-url="<GitHubRepoUrl>" --cx-flow.filterSeverity --cx-flow.filterCategory
+        includeSources: false
+        params: --sca.enable-sca-resolver=true --sca.sca-resolver-add-parameters.log-level=Debug --namespace=${{ github.repository_owner }} --repo-name=${{ github.event.repository.name }} --branch=${{ github.ref }} --repo-url="<GitHubRepoUrl>" --cx-flow.filterSeverity --cx-flow.filterCategory
 
     - name: Upload SARIF file
       uses: github/codeql-action/upload-sarif@v1
