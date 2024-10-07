@@ -1,66 +1,69 @@
-# This workflow is to automate Checkmarx SCA scans.  It runs on a push to the main branch.
-#
-# The following GitHub Secrets must be first defined:
-#   - CHECKMARX_SCA_USERNAME
-#   - CHECKMARX_SCA_PASSWORD
-#
-# The following variables must be inserted below:
-#   - <ProjectName>
-#   - <SCATenant>
-#   - <GitHubRepoUrl>
-#
-# For full documentation, including a list of all inputs, please refer to the README https://github.com/checkmarx-ts/checkmarx-cxflow-github-action
-
-name: Checkmarx SCA Scan
+#START
+# This is a basic workflow to help you get started with Actions  Uncomment Triggers to run this workflow
+name: CI
+# Controls when the workflow will run
 on:
-  push:
-    branches:
-      - main
-      - master
-    
+  # Triggers the workflow on push or pull request events but only for the main branch
+#   push:
+    branches: [ main ]
+#  pull_request:
+    branches: [ main ]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+  # This workflow contains a single job called "build"
   build:
+    # The type of runner that the job will run on
     runs-on: ubuntu-latest
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-    - name: Checkout
-      uses: actions/checkout@v2
-    - name: Checkmarx CxFlow Action
-      uses: checkmarx-ts/checkmarx-cxflow-github-action@v1.5 # GitHub Action version
-      with:
-        project: KB_GHA_SCAResolver  # <-- Insert Checkmarx CxSCA Project Name
-        sca_api_url: https://api-sca.checkmarx.net
-        sca_app_url: https://sca.checkmarx.net
-        sca_access_control_url: https://platform.checkmarx.net
-        sca_tenant: ${{ secrets.SCA_TENANT}}  # <-- Insert Checkmarx CxSCA Tenant
-        sca_username: ${{ secrets.SCA_USERNAME }} # To be stored in GitHub Secrets.
-        sca_password: ${{ secrets.SCA_PASSWORD }} # To be stored in GitHub Secrets.
-        break_build: false
-        scanners: sca
-        bug_tracker: Sarif
-        includeSources: false
-        params: --sca.enable-sca-resolver=true --sca.sca-resolver-add-parameters.log-level=Debug --namespace=${{ github.repository_owner }} --repo-name=${{ github.event.repository.name }} --branch=${{ github.ref }} --repo-url="<GitHubRepoUrl>" --cx-flow.filterSeverity --cx-flow.filterCategory
-    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    # Runs a single command using the runners shell
-    - name: Set SCA Resolver Enviroment
-      run: "wget https://sca-downloads.s3.amazonaws.com/cli/1.10.4/ScaResolver-linux64.tar.gz && tar -xzvf ScaResolver-linux64.tar.gz && rm -rf ScaResolver-linux64.tar.gz"
-    - name: Set Scala Packges
-      run: "# remove old Bintray repo file && sudo rm -f /etc/yum.repos.d/bintray-rpm.repo || true && curl -L https://www.scala-sbt.org/sbt-rpm.repo > sbt-rpm.repo && sudo mv sbt-rpm.repo /etc/yum.repos.d/ && sudo yum install sbt"  
-    - name: Validate Scala
-      run: "sbt --script-version"
-    - name: Compile SCALA Project
-      run: "cd ${{ github.workspace }} && sbt \"compile\" "
-     
-      # Runs SCA resolver commands inside of the Unbuntu shell
-      #Refer to: https://checkmarx.com/resource/documents/en/34965-19199-running-scans-using-checkmarx-sca-resolver.html
-      #Exite codes: https://checkmarx.com/resource/documents/en/34965-19199-running-scans-using-checkmarx-sca-resolver.html#UUID-af718204-6dfc-2b27-439e-419b9157d364_id_RunningScansUsingCheckmarxSCAResolver-ExitCodes
-      #For the Github variables, refer to https://docs.github.com/en/actions/learn-github-actions/environment-variables
-      
-    - name: SCA Resolver              
-      run: "./ScaResolver -s '${{ github.workspace }}' -n ' ${{ github.repository }}' -a ${{ secrets.SCA_TENANT }} -u ${{ secrets.SCA_USER }} -p '${{ secrets.SCA_USER_PASSWORD }}' --severity-threshold 'None' --report-extension Pdf,Json,Csv --report-type Risk" 
-      
-    - name: Download all workflow run artifacts
-      uses: actions/download-artifact@v3
-      with:
-            name: '${{ github.workspace }}/reports/'
+      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+      - uses: actions/checkout@v3
+      # Runs a single command using the runners shell
+      - name: Run a one-line script
+        run: echo Hello, world!
+      # Runs a set of commands using the runners shell
+      - name: Run a multi-line script
+        run: |
+          echo Add other actions to build,
+          echo test, and deploy your project.
+      # Download SCA Resolver
+      - name: Run a multi-line script
+        run: |
+          wget https://sca-downloads.s3.amazonaws.com/cli/latest/ScaResolver-linux64.tar.gz
+          tar -xzvf ScaResolver-linux64.tar.gz
+          rm -rf ScaResolver-linux64.tar.gz      
+      # Run Checkmarx 
+      - name: Checkmarx AST Github Action
+        # You may pin to the exact commit or the version.
+        # uses: Checkmarx/ast-github-action@33a450f2a0ae798ec9546bef50903edacf41c1e7
+        uses: Checkmarx/ast-github-action@2.0.4
+        with:
+          # Provide the AST portal URL
+          base_uri: https://eu.ast.checkmarx.net 
+          # Provide the Tenant for AST portal URL
+          cx_tenant: dp_wp_account
+          # Client ID for AST portal authentication
+          cx_client_id: KB_Github
+          # Secret key for AST portal authentication
+          cx_client_secret: 2c0387f1-2e21-46be-a213-7c193cf32e03
+          # Select a Checkmarx Project Name
+          project_name: KB_JVL_AST_GitHub_Action # optional, default is ${{ github.repository }}
+          # Branch name
+          branch: main
+          # GitHub API Token
+          github_token: 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
+          # Additional parameters for AST scan
+          additional_params: --report-format sonar 
+     - name: Sonar CLI Action 
+        uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          args: >
+            -Dsonar.externalIssuesReportPaths=./cx_result_sonar.json
+      #END
 
-      
