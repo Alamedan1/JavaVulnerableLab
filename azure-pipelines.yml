@@ -23,4 +23,4 @@ steps:
     projectName: '$(Build.Repository.Name)'
     branchName: '$(Build.SourceBranchName)'
     tenantName: 'DP_WP_ACCOUNT'
-    additionalParams: '--debug'
+    additionalParams: '--async --debug --scan-types sca'
