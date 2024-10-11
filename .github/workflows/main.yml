@@ -19,7 +19,7 @@ jobs:
           #cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
           cx_client_id: KB_GHA
           cx_client_secret: AiEaDPoJLBIThhcfIzaIXP2mILL4tOCy
-          additional_params: --report-format sonar --scan-types sca
+          additional_params: --report-format sonar --scan-types sca 
       - name: Sonar CLI Action 
         uses: sonarsource/sonarqube-scan-action@master
         env:
