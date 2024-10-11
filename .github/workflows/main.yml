@@ -15,15 +15,15 @@ jobs:
         with:
           base_uri: ${{ secrets.BASE_URI }}
           cx_tenant: ${{ secrets.CX_TENANT }}
-          cx_client_id: ${{ secrets.CLIENT_ID }}
-          cx_client_secret: ${{ secrets.SECRET }}
+          cx_client_id: ${{ secrets.CX_CLIENT_ID }}
+          cx_client_secret: ${{ secrets.CX_CLIENT_SECRET }}
           additional_params: --report-format sonar --scan-types sca
       - name: Sonar CLI Action 
         uses: sonarsource/sonarqube-scan-action@master
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
         with:
           args: >
             -Dsonar.externalIssuesReportPaths=./cx_result_sonar.json
